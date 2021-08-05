@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=Test.X
+PROJECTNAME=EngineValveRCU-sw
 
 # Active Configuration
 DEFAULTCONF=default
