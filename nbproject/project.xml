@@ -3,7 +3,7 @@
     <type>com.microchip.mplab.nbide.embedded.makeproject</type>
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/make-project/1">
-            <name>Test</name>
+            <name>EngineValveRCU-sw</name>
             <creation-uuid>3be4acbd-7fbe-49b6-a7a4-4abb13429ee8</creation-uuid>
             <make-project-type>0</make-project-type>
             <c-extensions>c</c-extensions>

@@ -2,22 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/C:/Users/henry/MPLABXProjects/Test.X/solenoids.h</file>
-            <file>file:/C:/Users/henry/MPLABXProjects/Test.X/motors.h</file>
-            <file>file:/C:/Users/henry/MPLABXProjects/Test.X/libcan/can.c</file>
-            <file>file:/C:/Users/henry/MPLABXProjects/Test.X/nbproject/Makefile-default.mk</file>
-            <file>file:/C:/Users/henry/MPLABXProjects/Test.X/libpicutil/uart_debug.c</file>
-            <file>file:/C:/Users/henry/MPLABXProjects/Test.X/motors.c</file>
-            <file>file:/C:/Users/henry/MPLABXProjects/Test.X/solenoids.c</file>
-            <file>file:/C:/Users/henry/MPLABXProjects/Test.X/encoders.h</file>
-            <file>file:/C:/Users/henry/MPLABXProjects/Test.X/adc.h</file>
-            <file>file:/C:/Users/henry/MPLABXProjects/Test.X/main.c</file>
-            <file>file:/C:/Users/henry/MPLABXProjects/Test.X/encoders.c</file>
-            <file>file:/C:/Users/henry/MPLABXProjects/Test.X/libpicutil/uart_debug.h</file>
-            <file>file:/C:/Users/henry/MPLABXProjects/Test.X/libpicutil/time.c</file>
-            <file>file:/C:/Users/henry/MPLABXProjects/Test.X/adc.c</file>
-            <file>file:/C:/Users/henry/MPLABXProjects/Test.X/libpicutil/time.h</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>

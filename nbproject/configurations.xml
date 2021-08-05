@@ -19,8 +19,8 @@
       <itemPath>libpicutil/time.h</itemPath>
       <itemPath>libpicutil/uart_debug.h</itemPath>
       <itemPath>libpicutil/config_mem.h</itemPath>
-      <itemPath>adc.h</itemPath>
-      <itemPath>adc.c</itemPath>
+      <itemPath>libpicutil/adc.c</itemPath>
+      <itemPath>libpicutil/adc.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
