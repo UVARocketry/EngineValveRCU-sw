@@ -23,6 +23,7 @@
 #include "encoders.h"
 #include "motors.h"
 #include "solenoids.h"
+#include "libpicutil/adc.h"
 
 //#define _XTAL_FREQ 64000000UL //needed for delays to work, but not much else
 
@@ -39,14 +40,15 @@ uint16_t last_200Hz_time,
 
 uint8_t hb_rx_flag;
 
-char msg[64] = "Hello world! 1234567890\n";
-
 Motor_t ox_main = {.which = 1};    //motor 1
 Motor_t fuel_press = {.which = 2}; //motor 2
 
 ValveControl_t valve_cmd;
 
 Heartbeat_t hb;
+
+char msg[64];
+uint16_t adcval;
 
 void on_can_rx(const can_msg_t *msg);
 
@@ -61,6 +63,7 @@ int main()
 
     time_init();
     uart_init();
+    adc_init();
     can_rx_callback = &on_can_rx;
     can_init();
     solenoids_init();
@@ -75,8 +78,6 @@ int main()
     //        LATCbits.LATC3 = 0;
     //        __delay_ms(100);
     //    }
-
-    uart_tx((uint8_t *)msg, sizeof(msg));
 
     while (1)
     {
@@ -106,6 +107,11 @@ int main()
             //send motor status msgs for both motors
             can_txq_push(ID_OX_MAIN_MOTOR_STATUS | RCU_ID_ENGINE_VALVE_RCU, sizeof(MotorStatus_t), (uint8_t *)&ox_main.status);
             can_txq_push(ID_FUEL_PRESS_MOTOR_STATUS | RCU_ID_ENGINE_VALVE_RCU, sizeof(MotorStatus_t), (uint8_t *)&fuel_press.status);
+            
+            //adc test
+            adcval = adc_read(18); //RC2
+            uint8_t txlen = sprintf(msg, "ADC:%6u\n", adcval);
+            uart_tx((uint8_t*)msg, txlen);
         }
         if (time_millis() - last_2Hz_time > 500)
         { //2Hz
