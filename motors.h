@@ -11,16 +11,16 @@
 #include <stdint.h>
 #include "libcan/can.h"
 
-typedef struct  {
+struct Motor_t {
     uint8_t which;
-    MotorStatus_t status;
+    struct MotorStatus_t status;
     uint8_t goal_pos;
     uint8_t stopped_pos;
     uint16_t last_stopped_time;
-} Motor_t;
+};
 
 void motors_init(void);
-void motor_control(Motor_t* motor);
+void motor_control(struct Motor_t* motor);
 
 #endif	/* MOTORS_H */
 

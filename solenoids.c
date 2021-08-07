@@ -14,7 +14,7 @@ void solenoids_init(void) {
     TRISAbits.TRISA6 = TRISAbits.TRISA7 = 0;
 }
 
-void solenoids_set(SolenoidsControl_t* cmd) {
+void solenoids_set(struct SolenoidsControl_t* cmd) {
     LATBbits.LB4 = cmd->engine_vent_valve_close;
     LATBbits.LB5 = cmd->main_fuel_valve_open;
     LATBbits.LB6 = cmd->solenoid_3_energize;

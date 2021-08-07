@@ -72,7 +72,7 @@ int8_t calc_speed(uint8_t pos, uint8_t goal_pos) {
     return 0;
 }
 
-void motor_control(Motor_t* motor) {
+void motor_control(struct Motor_t* motor) {
     motor->status.homing.limit_switch = encoders_is_limit(motor->which);
     motor->status.pos = encoders_get_pos(motor->which);
 

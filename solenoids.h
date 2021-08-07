@@ -13,7 +13,7 @@
 #include "libcan/can.h"
 
 void solenoids_init(void);
-void solenoids_set(SolenoidsControl_t* cmd);
+void solenoids_set(struct SolenoidsControl_t* cmd);
 
 #endif	/* SOLENOIDS_H */
 

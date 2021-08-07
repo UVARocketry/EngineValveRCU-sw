@@ -25,9 +25,9 @@
 #include "solenoids.h"
 #include "libpicutil/adc.h"
 
-//#define _XTAL_FREQ 64000000UL //needed for delays to work, but not much else
+#define _XTAL_FREQ 64000000UL //needed for delays to work, but not much else
 
-#define RCU_ID RCU_ID_ENGINE_VALVE_RCU //this is the Engine Valve RCU
+const uint8_t RCU_ID_LOCAL = RCU_ID_ENGINE_VALVE_RCU;
 
 /*
  * 
@@ -40,17 +40,17 @@ uint16_t last_200Hz_time,
 
 uint8_t hb_rx_flag;
 
-Motor_t ox_main = {.which = 1};    //motor 1
-Motor_t fuel_press = {.which = 2}; //motor 2
+struct Motor_t ox_main = {.which = 1};    //motor 1
+struct Motor_t fuel_press = {.which = 2}; //motor 2
 
-ValveControl_t valve_cmd;
+struct ValveControl_t valve_cmd;
 
-Heartbeat_t hb;
+struct Heartbeat_t hb;
 
 char msg[64];
 uint16_t adcval;
 
-void on_can_rx(const can_msg_t *msg);
+void on_can_rx(const struct can_msg_t *msg);
 
 int main()
 {
@@ -105,12 +105,12 @@ int main()
         { //10Hz
             last_10Hz_time = time_millis();
             //send motor status msgs for both motors
-            can_txq_push(ID_OX_MAIN_MOTOR_STATUS | RCU_ID_ENGINE_VALVE_RCU, sizeof(MotorStatus_t), (uint8_t *)&ox_main.status);
-            can_txq_push(ID_FUEL_PRESS_MOTOR_STATUS | RCU_ID_ENGINE_VALVE_RCU, sizeof(MotorStatus_t), (uint8_t *)&fuel_press.status);
+            can_txq_push(ID_OX_MAIN_MOTOR_STATUS, sizeof(struct MotorStatus_t), (uint8_t *)&ox_main.status);
+            can_txq_push(ID_FUEL_PRESS_MOTOR_STATUS, sizeof(struct MotorStatus_t), (uint8_t *)&fuel_press.status);
             
             //adc test
             adcval = adc_read(18); //RC2
-            uint8_t txlen = sprintf(msg, "ADC:%6u\n", adcval);
+            uint8_t txlen = (uint8_t)sprintf(msg, "ADC:%u\n", adcval);
             uart_tx((uint8_t*)msg, txlen);
         }
         if (time_millis() - last_2Hz_time > 500)
@@ -120,7 +120,7 @@ int main()
             //send a heartbeat msg
             hb.health = HEALTH_NOMINAL;
             hb.uptime_s = time_secs();
-            can_txq_push(ID_HEARTBEAT | RCU_ID_ENGINE_VALVE_RCU, sizeof(Heartbeat_t), (uint8_t *)&hb);
+            can_txq_push(ID_HEARTBEAT, sizeof(struct Heartbeat_t), (uint8_t *)&hb);
         }
     }
 }
@@ -129,20 +129,20 @@ int main()
 //set flag based on ID
 //disable CAN RX
 
-void on_can_rx(const can_msg_t *msg)
+void on_can_rx(const struct can_msg_t *msg)
 {
     switch (msg->id)
     {
     case (ID_VALVE_CONTROL | RCU_ID_MAIN_RCU): //valve control message from main RCU
         //update local ValveControl_t with data from message
-        if (msg->len == sizeof(ValveControl_t))
+        if (msg->len == sizeof(struct ValveControl_t))
         {
-            valve_cmd = *((ValveControl_t *)msg->data);
+            valve_cmd = *((struct ValveControl_t *)(msg->data));
         }
         break;
     case (ID_HEARTBEAT | RCU_ID_MAIN_RCU): //heartbeat from main RCU
         //set flag to indicate heartbeat received. main loop can note the time
-        if (msg->len == sizeof(Heartbeat_t))
+        if (msg->len == sizeof(struct Heartbeat_t))
         {
             hb_rx_flag = 1;
         }
