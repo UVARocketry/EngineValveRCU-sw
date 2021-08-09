@@ -57,17 +57,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=libcan/can.c libpicutil/time.c libpicutil/uart_debug.c libpicutil/adc.c main.c encoders.c motors.c solenoids.c
+SOURCEFILES_QUOTED_IF_SPACED=libcan/can.c libpicutil/time.c libpicutil/uart_debug.c libpicutil/adc.c main.c encoders.c motors.c solenoids.c libpicutil/leds.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/libcan/can.p1 ${OBJECTDIR}/libpicutil/time.p1 ${OBJECTDIR}/libpicutil/uart_debug.p1 ${OBJECTDIR}/libpicutil/adc.p1 ${OBJECTDIR}/main.p1 ${OBJECTDIR}/encoders.p1 ${OBJECTDIR}/motors.p1 ${OBJECTDIR}/solenoids.p1
-POSSIBLE_DEPFILES=${OBJECTDIR}/libcan/can.p1.d ${OBJECTDIR}/libpicutil/time.p1.d ${OBJECTDIR}/libpicutil/uart_debug.p1.d ${OBJECTDIR}/libpicutil/adc.p1.d ${OBJECTDIR}/main.p1.d ${OBJECTDIR}/encoders.p1.d ${OBJECTDIR}/motors.p1.d ${OBJECTDIR}/solenoids.p1.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/libcan/can.p1 ${OBJECTDIR}/libpicutil/time.p1 ${OBJECTDIR}/libpicutil/uart_debug.p1 ${OBJECTDIR}/libpicutil/adc.p1 ${OBJECTDIR}/main.p1 ${OBJECTDIR}/encoders.p1 ${OBJECTDIR}/motors.p1 ${OBJECTDIR}/solenoids.p1 ${OBJECTDIR}/libpicutil/leds.p1
+POSSIBLE_DEPFILES=${OBJECTDIR}/libcan/can.p1.d ${OBJECTDIR}/libpicutil/time.p1.d ${OBJECTDIR}/libpicutil/uart_debug.p1.d ${OBJECTDIR}/libpicutil/adc.p1.d ${OBJECTDIR}/main.p1.d ${OBJECTDIR}/encoders.p1.d ${OBJECTDIR}/motors.p1.d ${OBJECTDIR}/solenoids.p1.d ${OBJECTDIR}/libpicutil/leds.p1.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/libcan/can.p1 ${OBJECTDIR}/libpicutil/time.p1 ${OBJECTDIR}/libpicutil/uart_debug.p1 ${OBJECTDIR}/libpicutil/adc.p1 ${OBJECTDIR}/main.p1 ${OBJECTDIR}/encoders.p1 ${OBJECTDIR}/motors.p1 ${OBJECTDIR}/solenoids.p1
+OBJECTFILES=${OBJECTDIR}/libcan/can.p1 ${OBJECTDIR}/libpicutil/time.p1 ${OBJECTDIR}/libpicutil/uart_debug.p1 ${OBJECTDIR}/libpicutil/adc.p1 ${OBJECTDIR}/main.p1 ${OBJECTDIR}/encoders.p1 ${OBJECTDIR}/motors.p1 ${OBJECTDIR}/solenoids.p1 ${OBJECTDIR}/libpicutil/leds.p1
 
 # Source Files
-SOURCEFILES=libcan/can.c libpicutil/time.c libpicutil/uart_debug.c libpicutil/adc.c main.c encoders.c motors.c solenoids.c
+SOURCEFILES=libcan/can.c libpicutil/time.c libpicutil/uart_debug.c libpicutil/adc.c main.c encoders.c motors.c solenoids.c libpicutil/leds.c
 
 
 
@@ -158,6 +158,14 @@ ${OBJECTDIR}/solenoids.p1: solenoids.c  nbproject/Makefile-${CND_CONF}.mk
 	@-${MV} ${OBJECTDIR}/solenoids.d ${OBJECTDIR}/solenoids.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/solenoids.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
+${OBJECTDIR}/libpicutil/leds.p1: libpicutil/leds.c  nbproject/Makefile-${CND_CONF}.mk 
+	@${MKDIR} "${OBJECTDIR}/libpicutil" 
+	@${RM} ${OBJECTDIR}/libpicutil/leds.p1.d 
+	@${RM} ${OBJECTDIR}/libpicutil/leds.p1 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -O0 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx32 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/libpicutil/leds.p1 libpicutil/leds.c 
+	@-${MV} ${OBJECTDIR}/libpicutil/leds.d ${OBJECTDIR}/libpicutil/leds.p1.d 
+	@${FIXDEPS} ${OBJECTDIR}/libpicutil/leds.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
+	
 else
 ${OBJECTDIR}/libcan/can.p1: libcan/can.c  nbproject/Makefile-${CND_CONF}.mk 
 	@${MKDIR} "${OBJECTDIR}/libcan" 
@@ -222,6 +230,14 @@ ${OBJECTDIR}/solenoids.p1: solenoids.c  nbproject/Makefile-${CND_CONF}.mk
 	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -O0 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx32 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/solenoids.p1 solenoids.c 
 	@-${MV} ${OBJECTDIR}/solenoids.d ${OBJECTDIR}/solenoids.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/solenoids.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
+	
+${OBJECTDIR}/libpicutil/leds.p1: libpicutil/leds.c  nbproject/Makefile-${CND_CONF}.mk 
+	@${MKDIR} "${OBJECTDIR}/libpicutil" 
+	@${RM} ${OBJECTDIR}/libpicutil/leds.p1.d 
+	@${RM} ${OBJECTDIR}/libpicutil/leds.p1 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -O0 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx32 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/libpicutil/leds.p1 libpicutil/leds.c 
+	@-${MV} ${OBJECTDIR}/libpicutil/leds.d ${OBJECTDIR}/libpicutil/leds.p1.d 
+	@${FIXDEPS} ${OBJECTDIR}/libpicutil/leds.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
 endif
 

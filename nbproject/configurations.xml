@@ -21,6 +21,8 @@
       <itemPath>libpicutil/config_mem.h</itemPath>
       <itemPath>libpicutil/adc.c</itemPath>
       <itemPath>libpicutil/adc.h</itemPath>
+      <itemPath>libpicutil/leds.c</itemPath>
+      <itemPath>libpicutil/leds.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -42,6 +44,7 @@
   </logicalFolder>
   <sourceRootList>
     <Elem>.</Elem>
+    <Elem>../PowerPyroRCU-sw/libpicutil</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
