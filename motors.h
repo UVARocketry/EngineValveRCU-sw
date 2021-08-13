@@ -23,5 +23,7 @@ struct Motor_t {
 void motors_init(void);
 void motor_control(struct Motor_t* motor);
 
+int8_t calc_speed(uint16_t pos, uint16_t goal_pos); //delete from header
+
 #endif	/* MOTORS_H */
 

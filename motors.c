@@ -59,22 +59,22 @@ void motor_set(uint8_t which, int8_t speed) {
         CCPR1L = (uint8_t) (pwm & 0xFF);
     } else if (which == 2) {
         CCPR2H = (uint8_t) (pwm >> 8);
-        CCPR1L = (uint8_t) (pwm & 0xFF);
+        CCPR2L = (uint8_t) (pwm & 0xFF);
     }
 }
 
-int8_t calc_speed(uint8_t pos, uint8_t goal_pos) {
-    int8_t err = (int8_t) pos - (int8_t) goal_pos;
-    if (err > 5) return -127;
-    if (err < -5) return 127;
-    if (err > 0) return -70;
-    if (err < 0) return 70;
+int8_t calc_speed(uint16_t pos, uint16_t goal_pos) {
+    int16_t err = (int16_t)pos - (int16_t)goal_pos;
+    if (err > 100) return -127;
+    if (err < -100) return 127;
+    if (err > 2) return -70;
+    if (err < -2) return 70;
     return 0;
 }
 
 void motor_control(struct Motor_t* motor) {
     motor->status.homing.limit_switch = encoders_is_limit(motor->which);
-    motor->status.pos = encoders_get_pos(motor->which);//(PORTAbits.RA3 << 1 | PORTAbits.RA2); //encoders_get_pos(motor->which);
+    motor->status.pos = encoders_get_pos(motor->which);
 
     //update warning flags
     uint16_t delta_time = time_millis() - motor->last_stopped_time;
@@ -86,28 +86,30 @@ void motor_control(struct Motor_t* motor) {
         motor->stopped_pos = motor->status.pos;
         motor-> last_stopped_time = time_millis();
     }
-    
+
     int delta_pos = abs(motor->status.pos - motor->stopped_pos);
-    
+
     //nonzero speed to driver but encoder doesn't rotate
     motor->status.faults.motor_stuck = (motor->status.speed != 0) && (delta_pos < 5) && (delta_time > 500);
     //zero speed to driver (brake/lock) but encoder rotates
     motor->status.faults.motor_slip_encoder_drift = (motor->status.speed == 0) && delta_pos != 0;
     motor->status.faults.encoder_error = (encoders_errors > 0);
 
+    if (motor->status.homing.limit_switch) {
+        motor->status.homing.has_homed = 1;
+        encoders_zero(motor->which);
+    }
+
     if (motor->status.homing.has_homed) {
         //normal operation
         //control motor speed to move toward goal position
         //simple proportional control (for now)
-        //TODO: implement PID pos. ctrl.
-        motor->status.speed= calc_speed(motor->status.pos, motor->goal_pos);
+        //TODO: implement PID pos. ctrl.        
+        motor->status.speed = calc_speed(encoders_get_count(motor->which),
+                encoders_convert_pos(motor->which, motor->goal_pos));
     } else {
         //we need to home the encoder
         //TODO: have valve move away from zero a bit, then close, to ensure full closure at 0-position
-        if (motor->status.homing.limit_switch) {
-            motor->status.homing.has_homed = 1;
-            encoders_zero(motor->which);
-        }
         motor->status.speed = -127;
     }
     motor_set(motor->which, motor->status.speed); //reverse to zero position
