@@ -3,8 +3,8 @@
 
 uint8_t enc_1_prev_state, enc_2_prev_state;
 
-uint16_t enc_1_count;
-uint16_t enc_2_count;
+uint16_t enc_1_count = 1;
+uint16_t enc_2_count = 1;
 
 void encoders_init() {
     //RA0,1,2,3 are digital inputs with weak pull-ups
@@ -15,7 +15,7 @@ void encoders_init() {
     //RA4 is encoder 1 limit switch (active low)
     //RA5 is encoder 2 limit switch (active low)
     ANSELA &= ~0b00111111; //disable analog
-    WPUA |= 0b00111111; //enable pull up
+    WPUAbits.WPUA4 = WPUAbits.WPUA5 = 1; //enable pull up on RA4, RA5 (limit switches)
 }
 
 //fwd (A before B): 00, 10, 11, 01, 00... (0,2,3,1,0...)
@@ -51,6 +51,10 @@ void encoders_update() {
     uint8_t enc_2_state = (uint8_t) ((PORTAbits.RA3 << 1) | PORTAbits.RA2);
     enc_1_count += (uint16_t) count_delta(enc_1_state, enc_1_prev_state);
     enc_2_count += (uint16_t) count_delta(enc_2_state, enc_2_prev_state);
+    if(enc_1_count <= 1) enc_1_count = 1;
+    if(enc_2_count <= 1) enc_2_count = 1;
+    if(enc_1_count >= ENC_1_MAX_COUNT) enc_1_count = ENC_1_MAX_COUNT;
+    if(enc_2_count >= ENC_2_MAX_COUNT) enc_2_count = ENC_2_MAX_COUNT;
     enc_1_prev_state = enc_1_state;
     enc_2_prev_state = enc_2_state;
 }
@@ -66,10 +70,15 @@ uint8_t encoders_is_limit(uint8_t which) {
 
 uint8_t encoders_get_pos(uint8_t which) {
     if (which == 1) {
-        return (uint8_t)((float)enc_1_count * (100.0 / ENC_1_MAX_COUNT));
+        return (uint8_t)((float)enc_1_count * (100.0 / (float)ENC_1_MAX_COUNT));
     } 
     if (which == 2) {
-        return (uint8_t)((float)enc_2_count * (100.0 / ENC_2_MAX_COUNT));
+        return (uint8_t)((float)enc_2_count * (100.0 / (float)ENC_2_MAX_COUNT));
     }
     return 0;
+}
+
+void encoders_zero(uint8_t which) {
+    if(which == 1) enc_1_count = 1;
+    if(which == 2) enc_2_count = 1;
 }

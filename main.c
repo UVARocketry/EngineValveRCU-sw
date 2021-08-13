@@ -25,8 +25,6 @@
 #include "motors.h"
 #include "solenoids.h"
 
-#define _XTAL_FREQ 64000000UL //needed for delays to work, but not much else
-
 const uint8_t RCU_ID_LOCAL = RCU_ID_ENGINE_VALVE_RCU;
 
 /*
@@ -53,48 +51,44 @@ uint16_t adcval;
 void on_can_rx(const struct can_msg_t *msg);
 
 int main() {
-
-    //RC3 is a digital output
-    ANSELCbits.ANSELC3 = 0;
-    TRISCbits.TRISC3 = 0;
-
     INTCON0bits.GIE = 1; //enable global interrupts
 
     leds_init();
     time_init();
-    uart_init();
     can_rx_callback = &on_can_rx;
     can_init();
     solenoids_init();
     encoders_init();
     motors_init();
 
-    //    //flash RC3
-    //    for (uint8_t x = 0; x < 5; x++) {
-    //        LATCbits.LATC3 = 1;
-    //        __delay_ms(100);
-    //
-    //        LATCbits.LATC3 = 0;
-    //        __delay_ms(100);
-    //    }
-
     while (1) {
         if (one_kHz_flag) {
             one_kHz_flag = 0;
             encoders_update();
         }
-        //if valve control CAN rx flag:
-        //clear flag
-        //load RAM structs with control data from CAN peripheral
-        //reenable CAN receive
         if (time_millis() - last_200Hz_time > 5) { //200Hz
             last_200Hz_time = time_millis();
             //size_t n_chars = (size_t)sprintf(msg, "E1: %6u\tE2: %6u\n\r", enc_1_count, enc_2_count);
             //uart_tx((uint8_t*)msg, n_chars);
+            if(!connected) { //not connected - disregard valve_cmd struct. instead:
+                valve_cmd.main_ox_valve_goal_pos = 0; //close main ox
+                valve_cmd.fuel_pres_valve_goal_pos = 0; //close fuel press
+                valve_cmd.solenoids.engine_vent_valve_close = 0; //open engine vent
+                valve_cmd.solenoids.main_fuel_valve_open = 0; //close main fuel
+            }
+            //critical section: receiving another ValveControl_t here would be a problem
+            CAN_RX_SUSPEND();
+            //copy received goal_pos to each motor's data
+            ox_main.goal_pos = valve_cmd.main_ox_valve_goal_pos;
+            fuel_press.goal_pos = valve_cmd.fuel_pres_valve_goal_pos;
+            //move the solenoids to received positions
+            solenoids_set(&valve_cmd);
+            CAN_RX_RESUME();
+
+            
             //valve control
             motor_control(&ox_main);
             motor_control(&fuel_press);
-            solenoids_set(&(valve_cmd.solenoids));
 
             leds_connected(connected); //blink LED to show connection status
         }
@@ -102,16 +96,19 @@ int main() {
         if (time_millis() - last_10Hz_time > 100) { //10Hz
             last_10Hz_time = time_millis();
             //send motor status msgs for both motors
-            can_txq_push(ID_OX_MAIN_MOTOR_STATUS, sizeof (struct MotorStatus_t), (uint8_t *) & ox_main.status);
-            can_txq_push(ID_FUEL_PRESS_MOTOR_STATUS, sizeof (struct MotorStatus_t), (uint8_t *) & fuel_press.status);
+            can_txq_push(ID_OX_MAIN_MOTOR_STATUS, CAN_CONVERT(ox_main.status));
+            can_txq_push(ID_FUEL_PRESS_MOTOR_STATUS, CAN_CONVERT(fuel_press.status));
+            
+            if(connected && time_millis() - last_hb_rx_time > 600) {
+                connected = 0;
+            }
         }
         if (time_millis() - last_2Hz_time > 500) { //2Hz
             last_2Hz_time = time_millis();
-            LATCbits.LC3 = ~LATCbits.LC3; //blink LED at 1Hz
             //send a heartbeat msg
             hb.health = HEALTH_NOMINAL;
             hb.uptime_s = time_secs();
-            can_txq_push(ID_HEARTBEAT, sizeof (struct Heartbeat_t), (uint8_t *) & hb);
+            can_txq_push(ID_HEARTBEAT, CAN_CONVERT(hb));
         }
         if (hb_rx_flag) { //on heartbeat receive
             hb_rx_flag = 0;

@@ -10,8 +10,8 @@
 
 #include <stdint.h>
 
-#define ENC_1_MAX_COUNT 1000
-#define ENC_2_MAX_COUNT 500
+#define ENC_1_MAX_COUNT 5000
+#define ENC_2_MAX_COUNT 5000
 
 uint8_t encoders_errors;
 uint16_t enc_1_count;
@@ -22,6 +22,7 @@ void encoders_update(void);
 
 uint8_t encoders_is_limit(uint8_t which);
 uint8_t encoders_get_pos(uint8_t which);
+void encoders_zero(uint8_t which);
 
 #endif	/* ENCODERS_H */
 

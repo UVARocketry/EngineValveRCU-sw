@@ -10,10 +10,10 @@
 
 
 #include <stdint.h>
-#include "libcan/can.h"
+#include "libcan/can_messages.h"
 
 void solenoids_init(void);
-void solenoids_set(struct SolenoidsControl_t* cmd);
+void solenoids_set(struct ValveControl_t* cmd);
 
 #endif	/* SOLENOIDS_H */
 

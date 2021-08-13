@@ -9,6 +9,7 @@
 #define	MOTORS_H
 
 #include <stdint.h>
+#include "libcan/can_messages.h"
 #include "libcan/can.h"
 
 struct Motor_t {

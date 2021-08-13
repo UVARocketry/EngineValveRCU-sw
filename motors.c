@@ -74,7 +74,7 @@ int8_t calc_speed(uint8_t pos, uint8_t goal_pos) {
 
 void motor_control(struct Motor_t* motor) {
     motor->status.homing.limit_switch = encoders_is_limit(motor->which);
-    motor->status.pos = encoders_get_pos(motor->which);
+    motor->status.pos = encoders_get_pos(motor->which);//(PORTAbits.RA3 << 1 | PORTAbits.RA2); //encoders_get_pos(motor->which);
 
     //update warning flags
     uint16_t delta_time = time_millis() - motor->last_stopped_time;
@@ -100,13 +100,15 @@ void motor_control(struct Motor_t* motor) {
         //control motor speed to move toward goal position
         //simple proportional control (for now)
         //TODO: implement PID pos. ctrl.
-        motor_set(motor->which, calc_speed(motor->status.pos, motor->goal_pos));
+        motor->status.speed= calc_speed(motor->status.pos, motor->goal_pos);
     } else {
         //we need to home the encoder
         //TODO: have valve move away from zero a bit, then close, to ensure full closure at 0-position
-        motor_set(motor->which, -100); //reverse to zero position
         if (motor->status.homing.limit_switch) {
             motor->status.homing.has_homed = 1;
+            encoders_zero(motor->which);
         }
+        motor->status.speed = -127;
     }
+    motor_set(motor->which, motor->status.speed); //reverse to zero position
 }
