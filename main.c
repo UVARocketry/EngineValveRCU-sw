@@ -41,6 +41,7 @@ struct Motor_t ox_main = {.which = 1}; //motor 1
 struct Motor_t fuel_press = {.which = 2}; //motor 2
 
 struct ValveControl_t valve_cmd;
+uint8_t valve_cmd_rx_flag;
 
 struct Heartbeat_t hb;
 
@@ -66,8 +67,9 @@ int main() {
             one_kHz_flag = 0;
             encoders_update();
         }
-        if (ms - last_200Hz_time > 5) { //200Hz
+        if (ms - last_200Hz_time > 5 || valve_cmd_rx_flag) { //200Hz or upon new valve cmd rx
             last_200Hz_time = ms;
+            valve_cmd_rx_flag = 0;
             //size_t n_chars = (size_t)sprintf(msg, "E1: %6u\tE2: %6u\n\r", enc_1_count, enc_2_count);
             //uart_tx((uint8_t*)msg, n_chars);
             if (!connected) { //not connected - disregard valve_cmd struct. instead:
@@ -131,6 +133,7 @@ void on_can_rx(const struct can_msg_t *msg) {
             if (msg->len == sizeof (struct ValveControl_t)) {
                 valve_cmd = *((struct ValveControl_t *) (msg->data));
             }
+            valve_cmd_rx_flag = 1;
             break;
     }
 }
