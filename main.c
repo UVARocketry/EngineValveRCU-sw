@@ -53,8 +53,8 @@ void on_can_rx(const struct can_msg_t *msg);
 int main() {
     INTCON0bits.GIE = 1; //enable global interrupts
 
-    leds_init();
     time_init();
+    leds_init();
     can_rx_callback = &on_can_rx;
     can_init();
     solenoids_init();
@@ -74,7 +74,7 @@ int main() {
             //uart_tx((uint8_t*)msg, n_chars);
             if (!connected) { //not connected - disregard valve_cmd struct. instead:
                 valve_cmd.main_ox_valve_goal_pos = 0; //close main ox
-                valve_cmd.fuel_pres_valve_goal_pos = 0; //close fuel press
+                valve_cmd.fuel_press_valve_goal_pos = 0; //close fuel press
                 valve_cmd.solenoids.engine_vent_valve_close = 0; //open engine vent
                 valve_cmd.solenoids.main_fuel_valve_open = 0; //close main fuel
             }
@@ -82,7 +82,7 @@ int main() {
             CAN_RX_SUSPEND();
             //copy received goal_pos to each motor's data
             ox_main.goal_pos = valve_cmd.main_ox_valve_goal_pos;
-            fuel_press.goal_pos = valve_cmd.fuel_pres_valve_goal_pos;
+            fuel_press.goal_pos = valve_cmd.fuel_press_valve_goal_pos;
             //move the solenoids to received positions
             solenoids_set(&valve_cmd);
             CAN_RX_RESUME();
@@ -98,8 +98,8 @@ int main() {
             last_10Hz_time = ms;
             connected = can_hb_check_connected(ms);
             //send motor status msgs for both motors
-            can_txq_push(ID_OX_MAIN_MOTOR_STATUS, CAN_CONVERT(ox_main.status));
-            can_txq_push(ID_FUEL_PRESS_MOTOR_STATUS, CAN_CONVERT(fuel_press.status));
+            can_txq_push(CAN_ID_MotorStatus_OX_MAIN, CAN_CONVERT(ox_main.status));
+            can_txq_push(CAN_ID_MotorStatus_FUEL_PRESS, CAN_CONVERT(fuel_press.status));
 
             //            uint8_t arr[] = {0,0,0,0,0,0};
             //            uint16_t x = encoders_convert_pos(1,ox_main.goal_pos);
@@ -117,7 +117,7 @@ int main() {
             //send a heartbeat msg
             hb.health = HEALTH_NOMINAL;
             hb.uptime_s = time_secs();
-            can_txq_push(ID_HEARTBEAT, CAN_CONVERT(hb));
+            can_txq_push(CAN_ID_Heartbeat, CAN_CONVERT(hb));
         }
     }
 }
@@ -128,7 +128,7 @@ int main() {
 
 void on_can_rx(const struct can_msg_t *msg) {
     switch (msg->id) {
-        case (ID_VALVE_CONTROL | RCU_ID_MAIN_RCU): //valve control message from main RCU
+        case (CAN_ID_ValveControl | RCU_ID_MAIN_RCU): //valve control message from main RCU
             //update local ValveControl_t with data from message
             if (msg->len == sizeof (struct ValveControl_t)) {
                 valve_cmd = *((struct ValveControl_t *) (msg->data));
